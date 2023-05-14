@@ -48,9 +48,10 @@ const formats = [
 ];
 
 export default function RichEditor() {
-  const { description, setDescription } = useContext(fileContext);
+  const { description, setDescription, setSaved } = useContext(fileContext);
   const handleChange = (e) => {
     setDescription(e);
+    setSaved(false);
   };
   return (
     <QuillNoSSRWrapper

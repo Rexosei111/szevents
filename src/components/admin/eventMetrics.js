@@ -18,7 +18,7 @@ const eventIcons = {
 export default function EventMetrics({ metrics }) {
   const router = useRouter();
   //   const [eventType, setEventType] = useState(router.query.q || "All");
-  const [value, setValue] = useState(router.query.q || "All");
+  const [value, setValue] = useState(router.query.q || "all");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

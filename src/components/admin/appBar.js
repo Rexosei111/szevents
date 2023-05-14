@@ -1,31 +1,30 @@
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
+
 import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
-import LogoImage from "../../../public/logo-white-2.svg";
-import Image from "next/image";
 import Link from "@/components/Link";
 import { Paper, Stack, Tab, Tabs } from "@mui/material";
 import { useRouter } from "next/router";
 
 const pages = [
   { name: "Home", url: "/admin" },
-  { name: "Events", url: "/admin/events" },
+  { name: "all", url: "/admin/events?q=all" },
+  { name: "live", url: "/admin/events?q=live" },
+  { name: "upcoming", url: "/admin/events?q=upcoming" },
+  { name: "past", url: "/admin/events?q=past" },
 ];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 const LinkTab = (props) => {
-  return <Tab component={Link} {...props} />;
+  return (
+    <Tab
+      component={Link}
+      {...props}
+      sx={{ textTransform: "capitalize", fontWeight: 700, letterSpacing: 0.5 }}
+    />
+  );
 };
 function ResponsiveAppBar() {
   const router = useRouter();
@@ -35,7 +34,11 @@ function ResponsiveAppBar() {
     setValue(newValue);
   };
   return (
-    <AppBar position="static" elevation={0} sx={{ bgcolor: "transparent" }}>
+    <AppBar
+      position="static"
+      elevation={0}
+      sx={{ bgcolor: "transparent", zIndex: 2 }}
+    >
       <Container maxWidth="lg" disableGutters>
         <Paper
           elevation={0}
@@ -66,9 +69,10 @@ function ResponsiveAppBar() {
                 letterSpacing: ".2rem",
                 color: "white",
                 textDecoration: "none",
+                textTransform: "uppercase",
               }}
             >
-              logo
+              SPIRITZONE
             </Typography>
           </Stack>
           <Box
@@ -84,8 +88,8 @@ function ResponsiveAppBar() {
               onChange={handleChange}
               scrollButtons="auto"
               aria-label="scrollable auto tabs example"
-              textColor="secondary"
-              indicatorColor={"secondary"}
+              textColor="inherit"
+              indicatorColor={"primary"}
               centered
               sx={{
                 bgcolor: "transparent",
@@ -102,7 +106,7 @@ function ResponsiveAppBar() {
             </Tabs>
           </Box>
           <Stack>
-            <Typography>Profile</Typography>
+            <Typography>settings</Typography>
           </Stack>
         </Paper>
       </Container>

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/components/admin/layout";
 import {
   Button,
   Card,
   CardActions,
   CardContent,
+  Container,
   Step,
   StepLabel,
   Stepper,
@@ -18,6 +19,9 @@ import { styled } from "@mui/material/styles";
 import Check from "@mui/icons-material/Check";
 import Stack from "@mui/material/Stack";
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/router";
+import EventTable from "@/components/components/admin/eventTable";
 
 const steps = [
   {
@@ -59,20 +63,20 @@ const AddNewEventCard = () => {
         right: 70,
         borderRadius: 5,
       }}
-      elevation={0}
+      elevation={24}
     >
       <CardContent>
         <Typography variant="body1">Total events</Typography>
         <Typography variant="h3" textAlign={"center"}>
           4
         </Typography>
-        <Stepper orientation="vertical" activeStep={0}>
+        {/* <Stepper orientation="vertical" activeStep={0}>
           {steps.map((step, index) => (
             <Step key={index}>
               <StepLabel>{step.label}</StepLabel>
             </Step>
           ))}
-        </Stepper>
+        </Stepper> */}
         <CardActions>
           <Button
             fullWidth
@@ -87,38 +91,56 @@ const AddNewEventCard = () => {
     </Card>
   );
 };
-export default function NewEvent({ title }) {
+
+export default function Index() {
+  const router = useRouter();
+  const [status, setStatus] = useState(null);
+  const [events, setEvents] = useState([]);
+  useEffect(() => {
+    async function get_events() {
+      const { data } = await axios.get(
+        "http://localhost:3000/api/events?q=" + router.query.q
+      );
+      setEvents(data);
+    }
+    setStatus(router.query.q ? router.query.q : "all");
+    get_events();
+  }, [router]);
   return (
     <>
-      <AddNewEventCard />
+      {/* <AddNewEventCard /> */}
+      <Typography variant="h6" gutterBottom mt={2} textTransform={"capitalize"}>
+        {status} Events
+      </Typography>
+      <EventTable events={events} />
     </>
   );
 }
 
-NewEvent.getInitialProps = async () => {
+Index.getInitialProps = async (context) => {
   const metrics = [
     {
-      name: "All",
+      name: "all",
       value: 20,
       icon: "",
     },
     {
-      name: "Live",
+      name: "live",
       value: 1,
       icon: "",
     },
     {
-      name: "Upcoming",
+      name: "upcoming",
       value: 3,
       icon: "revenue",
     },
     {
-      name: "Past",
+      name: "past",
       value: 13,
       icon: "testimonies",
     },
     {
-      name: "Draft",
+      name: "draft",
       value: 3,
       icon: "event",
     },
@@ -133,6 +155,6 @@ NewEvent.getInitialProps = async () => {
   };
 };
 
-NewEvent.getLayout = (page) => {
+Index.getLayout = (page) => {
   return <AdminLayout details={page.props.pageDetails}>{page}</AdminLayout>;
 };

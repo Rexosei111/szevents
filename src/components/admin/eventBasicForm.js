@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -16,21 +16,28 @@ import TitleIcon from "@mui/icons-material/Title";
 import RichEditor from "./editor";
 import FileUploadRoot from "./fileUpload.js";
 import { createContext } from "react";
+import axios from "axios";
+import { Router, useRouter } from "next/router";
+import { newEventContext } from "@/components/pages/admin/events/new";
 
 export const fileContext = createContext("");
 const basicFormSchema = yup
   .object({
-    title: yup.string().required(),
+    name: yup.string().required(),
   })
   .required();
 
 export default function EventBasicForm() {
+  const { setNewEventForm } = useContext(newEventContext);
   const [file, setFile] = useState(null);
   const [uploadLink, setUploadLink] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(true);
   const [dateTime, setDateTime] = useState({
     startDate: null,
     startTime: null,
   });
+  const router = useRouter();
   const [description, setDescription] = useState(null);
   const {
     register,
@@ -41,13 +48,19 @@ export default function EventBasicForm() {
   });
 
   const onSubmit = async (data) => {
+    setLoading(true);
     const finalData = {
       ...data,
       ...dateTime,
       description,
       coverImage: uploadLink,
     };
-    return null;
+    setNewEventForm((prevState) => ({
+      ...prevState,
+      ...finalData,
+    }));
+    setSaved(true);
+    setLoading(false);
   };
 
   const handleDateChange = (dateObj) => {
@@ -62,6 +75,7 @@ export default function EventBasicForm() {
       ...prevState,
       startDate: `${dateObj?.$y}-${dateObj?.$M + 1}-${dateObj?.$D}`,
     }));
+    setSaved(false);
   };
 
   const handleTimeChange = (timeObj) => {
@@ -76,6 +90,7 @@ export default function EventBasicForm() {
       ...prevState,
       startTime: `${timeObj?.$H}:${timeObj?.$m}`,
     }));
+    setSaved(false);
   };
   return (
     <fileContext.Provider
@@ -86,6 +101,7 @@ export default function EventBasicForm() {
         setUploadLink,
         description,
         setDescription,
+        setSaved,
       }}
     >
       <form method="POST" action="#" onSubmit={handleSubmit(onSubmit)}>
@@ -96,17 +112,18 @@ export default function EventBasicForm() {
             flexWrap={"wrap"}
           >
             <Box width={{ xs: "100%", md: "60%" }}>
-              <InputLabel shrink htmlFor="title">
+              <InputLabel shrink htmlFor="name">
                 Name of Event
               </InputLabel>
               <TextField
                 fullWidth
-                id="title"
-                {...register("title")}
+                id="name"
+                {...register("name")}
                 variant="outlined"
                 type={"text"}
-                error={errors.title ? true : false}
-                helperText={errors.title ? errors.title?.message : null}
+                onChange={() => setSaved(false)}
+                error={errors.name ? true : false}
+                helperText={errors.name ? errors.name?.message : null}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -182,14 +199,15 @@ export default function EventBasicForm() {
           </Stack>
 
           <LoadingButton
-            //   loadingPosition="start"
-            //   startIcon={<LoginIcon />}
+            loading={loading}
+            size="small"
             variant="contained"
-            // disabled
+            disabled={saved}
+            disableElevation
             sx={{ ml: "auto" }}
             type="submit"
           >
-            save
+            save{saved && "d"}
           </LoadingButton>
         </Stack>
       </form>

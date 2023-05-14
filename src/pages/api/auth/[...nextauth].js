@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { Users } from "../../../schemas";
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_URL,
@@ -27,15 +28,16 @@ export const authOptions = {
         // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
-        console.log(credentials);
-        const user = credentials;
-
-        // If no error and we have user data, return it
-        if (user) {
+        try {
+          const user = await Users.get(credentials.email);
+          if (!user) {
+            return null;
+          }
           return user;
+        } catch (error) {
+          console.log(error);
+          return null;
         }
-        // Return null if user data could not be retrieved
-        return null;
       },
     }),
   ],

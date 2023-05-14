@@ -16,25 +16,26 @@ export default function AdminLayout({ children, details }) {
     },
   });
   return (
-    <>
+    <Stack flexDirection={"column"} width={"100vw"}>
       <Paper
         elevation={0}
         sx={{
-          background: "rgb(23,26,32)",
-          background:
-            "radial-gradient(circle, rgba(23,26,32,1) 0%, rgba(42,44,47,1) 60%, rgba(23,26,32,1) 100%)",
+          background: details?.coverImage ? null : "rgb(23,26,32)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          position: "relative",
+          backgroundImage: details?.coverImage
+            ? "linear-gradient(0deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), " +
+              `url('${details.coverImage}')`
+            : null,
           width: "100vw",
-          minHeight: "30vh",
-          maxHeight: "45vh",
+          minHeight: "35vh",
+          // maxHeight: "45vh",
           borderRadius: 0,
         }}
       >
         <ResponsiveAppBar />
-        <Container
-          maxWidth="lg"
-          sx={{ color: "#F8FAFC", py: 2 }}
-          disableGutters
-        >
+        <Container maxWidth="lg" sx={{ color: "#FFFFFF", py: 2 }}>
           <Typography variant="h4">{details?.title || null}</Typography>
           <Typography
             variant="subtitle2"
@@ -52,9 +53,9 @@ export default function AdminLayout({ children, details }) {
           )}
         </Container>
       </Paper>
-      <Container maxWidth="md" component={"main"}>
+      <Container maxWidth="lg" component={"main"} sx={{ flexGrow: 2 }}>
         {children}
       </Container>
-    </>
+    </Stack>
   );
 }
