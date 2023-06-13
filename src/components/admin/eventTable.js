@@ -77,15 +77,19 @@ export default function EventTable({ events = [] }) {
           {events &&
             events.map((row) => (
               <StyledTableRow
-                key={row.name}
+                key={row._id}
                 hover
-                onClick={() => handleClick(row.id)}
+                onClick={() => handleClick(row._id)}
               >
                 <StyledTableCell component="th" scope="row">
                   {row.name}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.startDate}</StyledTableCell>
-                <StyledTableCell align="right">{row.startTime}</StyledTableCell>
+                <StyledTableCell align="right">{`${new Date(
+                  row.startDate
+                ).toLocaleDateString()}`}</StyledTableCell>
+                <StyledTableCell align="right">{`${new Date(
+                  row.startTime
+                ).toLocaleTimeString()}`}</StyledTableCell>
                 <StyledTableCell align="right">
                   <Chip
                     label={statusInfo[row.status].text}

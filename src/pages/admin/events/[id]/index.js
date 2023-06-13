@@ -11,6 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  Skeleton,
   Slider,
   Stack,
   Typography,
@@ -22,19 +23,64 @@ import sanitizeHtml from "sanitize-html";
 import NumbersIcon from "@mui/icons-material/Numbers";
 import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import NewAdminLayout from "@/components/components/admin/adminLayout";
+import useSWR from "swr";
+import { fetcher } from "@/components/config/fetcher";
+import Image from "next/image";
 
 const sliderMarks = [
   { value: 0, label: "0" },
   { value: 200, label: "200" },
 ];
-export default function EventDetails({ pageDetails }) {
-  const eventDetails = pageDetails.eventDetails;
+
+const DetailsLoadingSkeleton = () => {
+  return (
+    <Stack flexDirection={"column"} gap={2} width={"100%"} height={"89vh"}>
+      <Skeleton variant="rectangular" width={"100%"} height={"30%"} />
+      <Skeleton variant="text" width={"70%"} height={"8%"} />
+      <Box width={"100%"}>
+        {Array.from(Array(10)).map((_, index) => (
+          <Skeleton variant="text" width={"80%"} height={"8%"} key={index} />
+        ))}
+      </Box>
+    </Stack>
+  );
+};
+export default function EventDetails() {
+  const router = useRouter();
+  // if (router.isReady) {
+  const { data, error, isLoading } = useSWR(
+    "/events/" + router.query.id,
+    fetcher
+  );
+  console.log(data);
+  // }
+
+  if (isLoading) {
+    return <DetailsLoadingSkeleton />;
+  }
   return (
     <>
       <Head>
-        <title>{eventDetails["name"]}</title>
+        <title>{data?.name}</title>
       </Head>
-      <Container maxWidth={"lg"} sx={{ my: 2, minHeight: 460 }}>
+      <Box
+        width={{ xs: "100%" }}
+        height={{ xs: "50%" }}
+        borderRadius={3}
+        position="relative"
+      >
+        <Image
+          src={data?.coverImage}
+          alt="cover image"
+          priority
+          fill
+          style={{ objectFit: "cover", borderRadius: 3 }}
+        />
+      </Box>
+      <Container maxWidth={"xl"} sx={{ my: 2, minHeight: "80vh" }}>
         <Stack
           flexDirection={"row"}
           gap={2}
@@ -42,22 +88,20 @@ export default function EventDetails({ pageDetails }) {
           position={"relative"}
         >
           <Box width={{ xs: "100%", md: "60%" }}>
-            <Typography variant="h6" gutterBottom>
+            {/* <Typography variant="caption" fontSize={15} gutterBottom>
               Event Description
-            </Typography>
+            </Typography> */}
             <Typography
               dangerouslySetInnerHTML={{
-                __html: sanitizeHtml(eventDetails["description"]),
+                __html: sanitizeHtml(data?.description),
               }}
               gutterBottom
             />
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="subtitle2" fontSize={15} gutterBottom>
               Location Information
             </Typography>
             <Typography variant="subtitle2">
-              {eventDetails?.location?.address
-                ? eventDetails.location?.address
-                : "Not set"}
+              {data?.location?.address ? data.location?.address : "Not set"}
             </Typography>
           </Box>
           <Divider flexItem orientation="vertical" variant="inset" />
@@ -80,8 +124,8 @@ export default function EventDetails({ pageDetails }) {
                   <ListItemText
                     primary="Scheduled to start at"
                     secondary={
-                      eventDetails?.startDate
-                        ? eventDetails?.startDate
+                      data?.startDate
+                        ? `${new Date(data?.startDate).toLocaleDateString()}`
                         : "Not set"
                     }
                   />
@@ -94,8 +138,8 @@ export default function EventDetails({ pageDetails }) {
                   <ListItemText
                     primary="Scheduled to start at"
                     secondary={
-                      eventDetails?.startTime
-                        ? eventDetails?.startTime
+                      data?.startTime
+                        ? `${new Date(data?.startTime).toLocaleTimeString()}`
                         : "Not set"
                     }
                   />
@@ -109,6 +153,8 @@ export default function EventDetails({ pageDetails }) {
                     borderRadius: 3,
                   }}
                   disableElevation
+                  LinkComponent={Link}
+                  href={"/admin/events/" + router.query.id + "/edit"}
                 >
                   Update Event
                 </Button>
@@ -127,7 +173,7 @@ export default function EventDetails({ pageDetails }) {
               <Typography variant="subtitle2" fontSize={18} gutterBottom>
                 Tickets Information
               </Typography>
-              {eventDetails.ticketInfo && (
+              {data?.ticketInfo && (
                 <List dense>
                   <ListItem disablePadding disableGutters>
                     <ListItemIcon>
@@ -139,8 +185,8 @@ export default function EventDetails({ pageDetails }) {
                     <ListItemText
                       primary="Total number of tickets"
                       secondary={
-                        eventDetails.ticketInfo?.total
-                          ? eventDetails.ticketInfo?.total
+                        data?.ticketInfo?.total
+                          ? data?.ticketInfo?.total
                           : "Not set"
                       }
                       secondaryTypographyProps={{
@@ -162,8 +208,8 @@ export default function EventDetails({ pageDetails }) {
                     <ListItemText
                       primary="Price per ticket"
                       secondary={
-                        eventDetails.ticketInfo?.price
-                          ? eventDetails.ticketInfo?.price
+                        data.ticketInfo?.price
+                          ? data.ticketInfo?.price
                           : "Not set"
                       }
                       secondaryTypographyProps={{
@@ -179,9 +225,7 @@ export default function EventDetails({ pageDetails }) {
                     <ListItemText
                       primary="Number of tickets sold"
                       secondary={
-                        eventDetails.ticketInfo?.sold
-                          ? eventDetails.ticketInfo?.sold
-                          : 0
+                        data.ticketInfo?.sold ? data.ticketInfo?.sold : 0
                       }
                       secondaryTypographyProps={{
                         color: "#dee1ec",
@@ -190,7 +234,7 @@ export default function EventDetails({ pageDetails }) {
                   </ListItem>
                 </List>
               )}
-              {!eventDetails.ticketInfo && (
+              {!data?.ticketInfo && (
                 <Typography textAlign={"center"} my={1} variant="caption">
                   Data unavailable
                 </Typography>
@@ -204,46 +248,14 @@ export default function EventDetails({ pageDetails }) {
 }
 
 EventDetails.getInitialProps = async (context) => {
-  const { id } = context.query;
-  const metrics = [
-    {
-      name: "All",
-      value: 20,
-      icon: "",
-    },
-    {
-      name: "Live",
-      value: 1,
-      icon: "",
-    },
-    {
-      name: "Upcoming",
-      value: 3,
-      icon: "revenue",
-    },
-    {
-      name: "Past",
-      value: 13,
-      icon: "testimonies",
-    },
-    {
-      name: "Draft",
-      value: 3,
-      icon: "event",
-    },
-  ];
-  const { data } = await axios.get("http://localhost:3000/api/events/" + id);
   return {
-    pageDetails: {
-      title: data.name,
-      coverImage: data?.coverImage,
-      subtitle: "Event details page",
-      eventDetails: data,
-      //   metrics,
-      //   metricsComponent: "events",
-    },
+    title: "Event Details",
+
+    subtitle: "Event details page",
+    //   metrics,
+    //   metricsComponent: "events",
   };
 };
 EventDetails.getLayout = (page) => {
-  return <AdminLayout details={page.props.pageDetails}>{page}</AdminLayout>;
+  return <NewAdminLayout title={page.props.title}>{page}</NewAdminLayout>;
 };

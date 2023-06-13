@@ -31,30 +31,23 @@ export default function SplitButton({ options = [], disable = false }) {
   const handleClick = async () => {
     setLoading(true);
     const statusN = options[selectedIndex].toLowerCase();
-    console.log(statusN);
-
-    setNewEventForm((prevState) => ({
-      ...prevState,
-      status: statusN,
-    }));
-    console.log(newEventForm);
     setLoading(false);
-    // try {
-    //   const { data } = await axios.post(
-    //     "http://localhost:3000/api/events",
-    //     newEventForm,
-    //     {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //     }
-    //   );
-    //   setLoading(false);
-    //   router.push("/admin/events/" + data.id);
-    // } catch (error) {
-    //   console.log(error);
-    //   setLoading(false);
-    // }
+    try {
+      const { data } = await axios.post(
+        "http://localhost:3000/api/events",
+        { ...newEventForm, status: statusN },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setLoading(false);
+      router.push("/admin/events/" + data._id);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   };
 
   const handleMenuItemClick = (event, index) => {

@@ -36,7 +36,7 @@ export default function Form() {
     return result;
   };
   return (
-    <Paper elevation={0}>
+    <Paper elevation={0} sx={{ p: 3 }}>
       <Typography variant="h3">Welcome back</Typography>
       <Typography variant="subtitle1" my={2} textAlign="center">
         Please log in with you credentials
@@ -86,9 +86,9 @@ export default function Form() {
           >
             Login
           </LoadingButton>
-          <Link href="#" style={{ marginLeft: "auto", fontSize: 15 }}>
+          {/* <Link href="#" style={{ marginLeft: "auto", fontSize: 15 }}>
             forgot your password?
-          </Link>
+          </Link> */}
         </Stack>
       </form>
     </Paper>

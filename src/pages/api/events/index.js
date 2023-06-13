@@ -1,6 +1,10 @@
-import { Events } from "@/components/schemas";
+// import { Events } from "@/components/schemas";
+import Event from "@/components/models/events";
+import connectMongo from "@/components/utils/connectMongo";
 
 export default async function handler(req, res) {
+  await connectMongo();
+
   if (req.method === "POST") {
     const body = req.body;
     const result = await post(body);
@@ -15,9 +19,22 @@ export default async function handler(req, res) {
   return res.status(200).json({ name: "John Doe" });
 }
 
+const getSummary = async () => {
+  try {
+    const summary = {};
+    const events = await Event.find({});
+    summary["total_events"] = events.length;
+    summary["events"] = events.slice(0, 10);
+    return summary;
+  } catch (error) {
+    console.log(error);
+    return {};
+  }
+};
+
 const post = async (content) => {
   try {
-    const newEvent = await Events.create(content);
+    const newEvent = await Event.create(content);
     return newEvent;
   } catch (error) {
     console.log(error);
@@ -29,9 +46,9 @@ const get = async (query = "") => {
   let events = [];
   try {
     if (query === "" || query === "all") {
-      events = await Events.scan().exec();
+      events = await Event.find({});
     } else {
-      events = await Events.query("id").where("status").eq(query).exec();
+      events = await Event.find({ status: query });
     }
     return events;
   } catch (error) {
