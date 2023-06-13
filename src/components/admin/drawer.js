@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Button,
+  Collapse,
   Divider,
   Drawer,
   IconButton,
@@ -15,7 +16,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { useContext } from "react";
 import { LayoutContext } from "./adminLayout";
 import MailIcon from "@mui/icons-material/Mail";
@@ -29,7 +30,16 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 // import useToken from "@/hooks/token";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { ChatSharp, Event, Money, PeopleOutline } from "@mui/icons-material";
+import {
+  ChatSharp,
+  Event,
+  ExpandLess,
+  ExpandMore,
+  Money,
+  PeopleOutline,
+  StarBorder,
+} from "@mui/icons-material";
+import { signOut } from "next-auth/react";
 
 export function ResponsiveDrawer(props) {
   // const [token, setToken] = useToken("token", null);
@@ -59,7 +69,7 @@ export function ResponsiveDrawer(props) {
           }
         />
       ),
-      url: "/admin/events?q=all",
+      url: "/admin/events",
     },
     {
       label: "Testimonies",
@@ -99,12 +109,16 @@ export function ResponsiveDrawer(props) {
   //   };
 
   const Mydrawer = () => {
+    const [open, setOpen] = useState(false);
     // const [token, setToken] = useToken("token", null);
     const router = useRouter();
-    // const logout = () => {
-    //   setToken(null);
-    //   router.push("/auth/login");
-    // };
+    const logout = () => {
+      signOut({ redirect: false });
+      // router.push("/auth/login");
+    };
+    const handleOpen = (e) => {
+      setOpen(!open);
+    };
     return (
       <Box height={"89%"}>
         <Toolbar />
@@ -121,24 +135,24 @@ export function ResponsiveDrawer(props) {
                 disablePadding
                 sx={{
                   bgcolor: (theme) =>
-                    router.pathname === "/a" && item.label === "Accueil"
+                    router.pathname === "/admin" && item.label === "Home"
                       ? theme.palette.primary.main
                       : router.pathname.startsWith(item.url) &&
-                        item.label !== "Accueil"
+                        item.label !== "Home"
                       ? theme.palette.primary.main
                       : null,
                 }}
               >
-                <ListItemButton LinkComponent={Link} href={item.url}>
+                <ListItemButton component={Link} href={item.url}>
                   <ListItemIcon>{item.icon}</ListItemIcon>
                   <ListItemText
                     primary={item.label}
                     primaryTypographyProps={{
                       color:
-                        router.pathname === "/a" && item.label === "Accueil"
+                        router.pathname === "/admin" && item.label === "Home"
                           ? "white"
                           : router.pathname.startsWith(item.url) &&
-                            item.label !== "Accueil"
+                            item.label !== "Home"
                           ? "white"
                           : null,
                     }}
@@ -150,7 +164,7 @@ export function ResponsiveDrawer(props) {
           <Paper
             component={Stack}
             flexDirection={"column"}
-            gap={1}
+            gap={2}
             sx={{
               mt: "auto",
               width: "100%",
@@ -169,9 +183,9 @@ export function ResponsiveDrawer(props) {
               sx={{ fontSize: 13, textTransform: "capitalize" }}
               gap={2}
             >
-              <IconButton>
-                <PeopleOutline fontSize="small" />
-              </IconButton>
+              {/* <IconButton> */}
+              <PeopleOutline fontSize="small" />
+              {/* </IconButton> */}
               <Typography fontSize={13}>Utilisateurs</Typography>
             </Stack>
             <Stack
@@ -191,14 +205,14 @@ export function ResponsiveDrawer(props) {
               justifyContent={"flex-start"}
               alignItems={"center"}
               component={Button}
-              //   onClick={logout}
+              onClick={logout}
               variant="secondary"
               sx={{ fontSize: 13, textTransform: "capitalize" }}
               gap={2}
             >
-              <IconButton>
-                <LogoutIcon fontSize="small" />
-              </IconButton>
+              {/* <IconButton> */}
+              <LogoutIcon fontSize="small" />
+              {/* </IconButton> */}
               <Typography fontSize={13}>Logout</Typography>
             </Stack>
           </Paper>

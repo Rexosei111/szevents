@@ -66,183 +66,193 @@ export default function EventDetails() {
       <Head>
         <title>{data?.name}</title>
       </Head>
-      <Box
-        width={{ xs: "100%" }}
-        height={{ xs: "50%" }}
-        borderRadius={3}
-        position="relative"
-      >
-        <Image
-          src={data?.coverImage}
-          alt="cover image"
-          priority
-          fill
-          style={{ objectFit: "cover", borderRadius: 3 }}
-        />
-      </Box>
-      <Container maxWidth={"xl"} sx={{ my: 2, minHeight: "80vh" }}>
-        <Stack
-          flexDirection={"row"}
-          gap={2}
-          width={"100%"}
-          position={"relative"}
-        >
-          <Box width={{ xs: "100%", md: "60%" }}>
-            {/* <Typography variant="caption" fontSize={15} gutterBottom>
-              Event Description
-            </Typography> */}
-            <Typography
-              dangerouslySetInnerHTML={{
-                __html: sanitizeHtml(data?.description),
-              }}
-              gutterBottom
-            />
-            <Typography variant="subtitle2" fontSize={15} gutterBottom>
-              Location Information
-            </Typography>
-            <Typography variant="subtitle2">
-              {data?.location?.address ? data.location?.address : "Not set"}
-            </Typography>
-          </Box>
-          <Divider flexItem orientation="vertical" variant="inset" />
+      <Box height={"inherit"}>
+        <Typography variant="h4" gutterButton mb={2}>
+          {data?.name}
+        </Typography>
+        <Box width={{ xs: "100%" }} height={{ xs: 350 }} position="relative">
+          <Image
+            src={data?.coverImage}
+            alt="cover image"
+            priority
+            fill
+            style={{ objectFit: "cover", borderRadius: 13 }}
+          />
+        </Box>
+        <Box maxWidth={"xl"} sx={{ my: 2 }}>
           <Stack
-            flexDirection={"column"}
-            gap={2}
-            width={{ xs: "100%", md: "30%" }}
-            my={2}
-            sx={{ position: "absolute", right: 0, top: -150 }}
+            flexDirection={"row"}
+            gap={5}
+            width={"100%"}
+            flexWrap={{ xs: "wrap-reverse", lg: "nowrap" }}
+            // position={"relative"}
           >
-            <Paper sx={{ width: "100%", p: 2, borderRadius: 3 }} elevation={24}>
-              <Typography variant="subtitle2" fontSize={18} gutterBottom>
-                Date and Time
-              </Typography>
-              <List dense>
-                <ListItem disablePadding disableGutters>
-                  <ListItemIcon>
-                    <DateRangeOutlinedIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Scheduled to start at"
-                    secondary={
-                      data?.startDate
-                        ? `${new Date(data?.startDate).toLocaleDateString()}`
-                        : "Not set"
-                    }
-                  />
-                </ListItem>
-                <Divider variant="inset" sx={{ my: 1, bgcolor: "#e8ffe8" }} />
-                <ListItem disablePadding disableGutters>
-                  <ListItemIcon>
-                    <AccessTimeOutlinedIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Scheduled to start at"
-                    secondary={
-                      data?.startTime
-                        ? `${new Date(data?.startTime).toLocaleTimeString()}`
-                        : "Not set"
-                    }
-                  />
-                </ListItem>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  sx={{
-                    bgcolor: "rgb(23,26,32)",
-                    color: "white",
-                    borderRadius: 3,
-                  }}
-                  disableElevation
-                  LinkComponent={Link}
-                  href={"/admin/events/" + router.query.id + "/edit"}
-                >
-                  Update Event
-                </Button>
-              </List>
-            </Paper>
-            <Paper
-              sx={{
-                width: "100%",
-                p: 2,
-                borderRadius: 3,
-                bgcolor: "rgb(23,26,32)",
-                color: "white",
-              }}
+            <Box
+              width={{ xs: "100%", md: "60%" }}
+              // order={{ xs: 2, lg: 1 }}
+              component={Paper}
+              p={2}
               elevation={0}
             >
-              <Typography variant="subtitle2" fontSize={18} gutterBottom>
-                Tickets Information
+              {/* <Typography variant="caption" fontSize={15} gutterBottom>
+              Event Description
+            </Typography> */}
+              <Typography
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeHtml(data?.description),
+                }}
+                gutterBottom
+              />
+              <Typography variant="subtitle2" fontSize={15} gutterBottom>
+                Location Information
               </Typography>
-              {data?.ticketInfo && (
+              <Typography variant="subtitle2">
+                {data?.location?.address ? data.location?.address : "Not set"}
+              </Typography>
+            </Box>
+            <Stack
+              flexDirection={"column"}
+              gap={2}
+              // order={{ xs: 1, lg: 2 }}
+              width={{ xs: "100%", md: "30%" }}
+              my={1}
+              // sx={{ position: "absolute", right: 0, top: -150 }}
+            >
+              <Paper
+                sx={{ width: "100%", p: 2, borderRadius: 3 }}
+                elevation={24}
+              >
+                <Typography variant="subtitle2" fontSize={18} gutterBottom>
+                  Date and Time
+                </Typography>
                 <List dense>
                   <ListItem disablePadding disableGutters>
                     <ListItemIcon>
-                      <ConfirmationNumberOutlined
-                        fontSize="small"
-                        htmlColor="white"
-                      />
+                      <DateRangeOutlinedIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText
-                      primary="Total number of tickets"
+                      primary="Scheduled to start at"
                       secondary={
-                        data?.ticketInfo?.total
-                          ? data?.ticketInfo?.total
+                        data?.startDate
+                          ? `${new Date(data?.startDate).toLocaleDateString()}`
                           : "Not set"
                       }
-                      secondaryTypographyProps={{
-                        color: "#dee1ec",
-                      }}
                     />
                   </ListItem>
-                  <Divider variant="inset" sx={{ my: 1, bgcolor: "white" }} />
+                  <Divider variant="inset" sx={{ my: 1, bgcolor: "#e8ffe8" }} />
                   <ListItem disablePadding disableGutters>
                     <ListItemIcon>
-                      <Typography
-                        variant="subtitle2"
-                        fontSize={20}
-                        color={"white"}
-                      >
-                        GH
-                      </Typography>
+                      <AccessTimeOutlinedIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText
-                      primary="Price per ticket"
+                      primary="Scheduled to start at"
                       secondary={
-                        data.ticketInfo?.price
-                          ? data.ticketInfo?.price
+                        data?.startTime
+                          ? `${new Date(data?.startTime).toLocaleTimeString()}`
                           : "Not set"
                       }
-                      secondaryTypographyProps={{
-                        color: "#dee1ec",
-                      }}
                     />
                   </ListItem>
-                  <Divider variant="inset" sx={{ my: 1, bgcolor: "white" }} />
-                  <ListItem disablePadding disableGutters>
-                    <ListItemIcon>
-                      <NumbersIcon fontSize="small" htmlColor="white" />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Number of tickets sold"
-                      secondary={
-                        data.ticketInfo?.sold ? data.ticketInfo?.sold : 0
-                      }
-                      secondaryTypographyProps={{
-                        color: "#dee1ec",
-                      }}
-                    />
-                  </ListItem>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    sx={{
+                      bgcolor: "rgb(23,26,32)",
+                      color: "white",
+                      borderRadius: 3,
+                    }}
+                    disableElevation
+                    LinkComponent={Link}
+                    href={"/admin/events/" + router.query.id + "/edit"}
+                  >
+                    Update Event
+                  </Button>
                 </List>
-              )}
-              {!data?.ticketInfo && (
-                <Typography textAlign={"center"} my={1} variant="caption">
-                  Data unavailable
+              </Paper>
+              <Paper
+                sx={{
+                  width: "100%",
+                  p: 2,
+                  borderRadius: 3,
+                  bgcolor: "rgb(23,26,32)",
+                  color: "white",
+                }}
+                elevation={0}
+              >
+                <Typography variant="subtitle2" fontSize={18} gutterBottom>
+                  Tickets Information
                 </Typography>
-              )}
-            </Paper>
+                {data?.ticketInfo && (
+                  <List dense>
+                    <ListItem disablePadding disableGutters>
+                      <ListItemIcon>
+                        <ConfirmationNumberOutlined
+                          fontSize="small"
+                          htmlColor="white"
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Total number of tickets"
+                        secondary={
+                          data?.ticketInfo?.total
+                            ? data?.ticketInfo?.total
+                            : "Not set"
+                        }
+                        secondaryTypographyProps={{
+                          color: "#dee1ec",
+                        }}
+                      />
+                    </ListItem>
+                    <Divider variant="inset" sx={{ my: 1, bgcolor: "white" }} />
+                    <ListItem disablePadding disableGutters>
+                      <ListItemIcon>
+                        <Typography
+                          variant="subtitle2"
+                          fontSize={20}
+                          color={"white"}
+                        >
+                          GH
+                        </Typography>
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Price per ticket"
+                        secondary={
+                          data.ticketInfo?.price
+                            ? data.ticketInfo?.price
+                            : "Not set"
+                        }
+                        secondaryTypographyProps={{
+                          color: "#dee1ec",
+                        }}
+                      />
+                    </ListItem>
+                    <Divider variant="inset" sx={{ my: 1, bgcolor: "white" }} />
+                    <ListItem disablePadding disableGutters>
+                      <ListItemIcon>
+                        <NumbersIcon fontSize="small" htmlColor="white" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Number of tickets sold"
+                        secondary={
+                          data.ticketInfo?.sold ? data.ticketInfo?.sold : 0
+                        }
+                        secondaryTypographyProps={{
+                          color: "#dee1ec",
+                        }}
+                      />
+                    </ListItem>
+                  </List>
+                )}
+                {!data?.ticketInfo && (
+                  <Typography textAlign={"center"} my={1} variant="caption">
+                    Data unavailable
+                  </Typography>
+                )}
+              </Paper>
+            </Stack>
           </Stack>
-        </Stack>
-      </Container>
+        </Box>
+      </Box>
     </>
   );
 }

@@ -1,3 +1,4 @@
+import NewAdminLayout from "@/components/components/admin/adminLayout";
 import EventBasicForm from "@/components/components/admin/eventBasicForm";
 import EventFormWrapper from "@/components/components/admin/eventForm";
 import EventLocationForm from "@/components/components/admin/eventLocationForm";
@@ -41,13 +42,11 @@ export default function NewEvent() {
 
 NewEvent.getInitialProps = async () => {
   return {
-    pageDetails: {
-      title: "Create New Event",
-      subtitle: "Lorem ipsum",
-    },
+    title: "Create New Event",
+    subtitle: "Lorem ipsum",
   };
 };
 
 NewEvent.getLayout = (page) => {
-  return <AdminLayout details={page.props.pageDetails}>{page}</AdminLayout>;
+  return <NewAdminLayout details={page.props.title}>{page}</NewAdminLayout>;
 };

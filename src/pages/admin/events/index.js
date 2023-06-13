@@ -19,9 +19,11 @@ import { styled } from "@mui/material/styles";
 import Check from "@mui/icons-material/Check";
 import Stack from "@mui/material/Stack";
 import Link from "next/link";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { useRouter } from "next/router";
 import EventTable from "@/components/components/admin/eventTable";
+import NewAdminLayout from "@/components/components/admin/adminLayout";
+import { Add } from "@mui/icons-material";
 
 const steps = [
   {
@@ -98,17 +100,40 @@ export default function Index() {
   const [events, setEvents] = useState([]);
   useEffect(() => {
     async function get_events() {
-      const { data } = await axios.get(
-        "http://localhost:3000/api/events?q=" + router.query.q
-      );
-      setEvents(data);
+      try {
+        const { data } = await axios.get(
+          "http://localhost:3000/api/events?q=" + router.query.q
+            ? router.query.q
+            : "all"
+        );
+        setEvents(data);
+        console.log(data);
+      } catch (error) {
+        if (isAxiosError(error)) {
+          console.log(error);
+        }
+      }
     }
     setStatus(router.query.q ? router.query.q : "all");
-    get_events();
+    if (router.isReady) {
+      get_events();
+    }
   }, [router]);
   return (
     <>
       {/* <AddNewEventCard /> */}
+      <Stack flexDirection={"row"} width={"100%"}>
+        <Button
+          startIcon={<Add fontSize="small" />}
+          sx={{ ml: "auto" }}
+          variant="contained"
+          component={Link}
+          href="/admin/events/new"
+          disableElevation
+        >
+          New
+        </Button>
+      </Stack>
       <Typography variant="h6" gutterBottom mt={2} textTransform={"capitalize"}>
         {status} Events
       </Typography>
@@ -146,15 +171,11 @@ Index.getInitialProps = async (context) => {
     },
   ];
   return {
-    pageDetails: {
-      title: "Good morning, Rex",
-      subtitle: "Add new events to your list",
-      metrics,
-      metricsComponent: "events",
-    },
+    title: "Good morning, Rex",
+    subtitle: "Add new events to your list",
   };
 };
 
 Index.getLayout = (page) => {
-  return <AdminLayout details={page.props.pageDetails}>{page}</AdminLayout>;
+  return <NewAdminLayout details={page.props.title}>{page}</NewAdminLayout>;
 };

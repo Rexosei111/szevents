@@ -1,4 +1,7 @@
-import EventBasicForm from "@/components/components/admin/eventBasicForm";
+import NewAdminLayout from "@/components/components/admin/adminLayout";
+import EventBasicForm, {
+  EventBasicEditForm,
+} from "@/components/components/admin/eventBasicForm";
 import EventFormWrapper from "@/components/components/admin/eventForm";
 import EventLocationForm from "@/components/components/admin/eventLocationForm";
 import AdminLayout from "@/components/components/admin/layout";
@@ -10,7 +13,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { createContext, useEffect, useState } from "react";
 
-export const newEventContext = createContext("");
+export const editEventContext = createContext("");
 const saveOptions = ["Draft", "Live", "Upcoming"];
 export default function EditEvent() {
   const router = useRouter();
@@ -29,14 +32,14 @@ export default function EditEvent() {
     getEvent();
   }, []);
   return (
-    <newEventContext.Provider value={{ newEventForm, setNewEventForm }}>
+    <editEventContext.Provider value={{ newEventForm, setNewEventForm }}>
       <Head>
         <title>{newEventForm && newEventForm.name}</title>
       </Head>
       <EventFormWrapper
         title={"Basic details"}
         subtitle={"This section contains the basic details about the event"}
-        sectionForm={<EventBasicForm />}
+        sectionForm={<EventBasicEditForm info={newEventForm} />}
       />
       <EventFormWrapper
         title={"Location Details"}
@@ -51,19 +54,17 @@ export default function EditEvent() {
       <Stack flexDirection={"row"} justifyContent={"flex-end"} gap={1} my={1}>
         <SplitButton options={saveOptions} />
       </Stack>
-    </newEventContext.Provider>
+    </editEventContext.Provider>
   );
 }
 
 EditEvent.getInitialProps = async () => {
   return {
-    pageDetails: {
-      title: "Create New Event",
-      subtitle: "Lorem ipsum",
-    },
+    title: "Create New Event",
+    subtitle: "Lorem ipsum",
   };
 };
 
 EditEvent.getLayout = (page) => {
-  return <AdminLayout details={page.props.pageDetails}>{page}</AdminLayout>;
+  return <NewAdminLayout title={page.props.title}>{page}</NewAdminLayout>;
 };
