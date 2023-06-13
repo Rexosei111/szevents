@@ -257,15 +257,6 @@ export default function EventDetails() {
   );
 }
 
-EventDetails.getInitialProps = async (context) => {
-  return {
-    title: "Event Details",
-
-    subtitle: "Event details page",
-    //   metrics,
-    //   metricsComponent: "events",
-  };
-};
 EventDetails.getLayout = (page) => {
-  return <NewAdminLayout title={page.props.title}>{page}</NewAdminLayout>;
+  return <NewAdminLayout title={"Event Details"}>{page}</NewAdminLayout>;
 };

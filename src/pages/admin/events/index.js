@@ -142,40 +142,6 @@ export default function Index() {
   );
 }
 
-Index.getInitialProps = async (context) => {
-  const metrics = [
-    {
-      name: "all",
-      value: 20,
-      icon: "",
-    },
-    {
-      name: "live",
-      value: 1,
-      icon: "",
-    },
-    {
-      name: "upcoming",
-      value: 3,
-      icon: "revenue",
-    },
-    {
-      name: "past",
-      value: 13,
-      icon: "testimonies",
-    },
-    {
-      name: "draft",
-      value: 3,
-      icon: "event",
-    },
-  ];
-  return {
-    title: "Good morning, Rex",
-    subtitle: "Add new events to your list",
-  };
-};
-
 Index.getLayout = (page) => {
-  return <NewAdminLayout details={page.props.title}>{page}</NewAdminLayout>;
+  return <NewAdminLayout title={"Your Events"}>{page}</NewAdminLayout>;
 };

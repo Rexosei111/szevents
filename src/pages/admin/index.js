@@ -70,13 +70,13 @@ export default function Index() {
   );
 }
 
-Index.getInitialProps = async () => {
-  return {
-    title: "Good morning, Rex",
-    subtitle: "Add new events to your list",
-  };
-};
+// Index.getInitialProps = async () => {
+//   return {
+//     title: "Good morning, Rex",
+//     subtitle: "Add new events to your list",
+//   };
+// };
 
 Index.getLayout = function (page) {
-  return <NewAdminLayout title={page.props.title}>{page}</NewAdminLayout>;
+  return <NewAdminLayout title={"Welcome"}>{page}</NewAdminLayout>;
 };

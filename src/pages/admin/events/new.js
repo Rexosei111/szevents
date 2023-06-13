@@ -40,13 +40,6 @@ export default function NewEvent() {
   );
 }
 
-NewEvent.getInitialProps = async () => {
-  return {
-    title: "Create New Event",
-    subtitle: "Lorem ipsum",
-  };
-};
-
 NewEvent.getLayout = (page) => {
-  return <NewAdminLayout details={page.props.title}>{page}</NewAdminLayout>;
+  return <NewAdminLayout title={"Create New Event"}>{page}</NewAdminLayout>;
 };
