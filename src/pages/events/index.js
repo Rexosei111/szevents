@@ -122,9 +122,7 @@ export default function Events() {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     async function get_events() {
-      const { data } = await axios.get(
-        "http://localhost:3000/api/events?q=" + router.query.q
-      );
+      const { data } = await axios.get("/api/events?q=" + router.query.q);
       console.log(data);
       setEvents(data);
       setLoading(false);
