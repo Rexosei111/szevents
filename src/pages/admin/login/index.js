@@ -3,39 +3,35 @@ import Image from "next/image";
 import LogoImage from "../../../../public/logo-white-2.svg";
 import React from "react";
 import Form from "@/components/components/admin/login/form";
+import Head from "next/head";
 
 export default function Login() {
   return (
-    <Container maxWidth="xl" sx={{ minHeight: "100vh" }} disableGutters>
-      <Stack
-        flexDirection={"row"}
-        alignItems="center"
-        justifyContent={"flex-start"}
-        height="inherit%"
-        position={"relative"}
-      >
+    <>
+      <Head>
+        <title>Login</title>
+      </Head>
+      <Container maxWidth="xl" sx={{ minHeight: "100vh" }} disableGutters>
         <Paper
           elevation={0}
-          sx={{
-            minHeight: "100vh",
-            maxWidth: "50vw",
-            p: 2,
-          }}
+          sx={{ width: "100vw", minHeight: "10vh", px: 3, py: 1 }}
+          component={Stack}
+          flexDirection={"row"}
+          alignItems={"center"}
+          justifyContent={"flex-start"}
         >
           <Image src={LogoImage} width={120} alt="logo" />
-          <Paper
-            elevation={0}
-            sx={{
-              width: "50vw",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Form />
-          </Paper>
         </Paper>
-      </Stack>
-    </Container>
+        <Stack
+          flexDirection={"row"}
+          alignItems="center"
+          justifyContent={"center"}
+          width={"100%"}
+          minHeight="89vh"
+        >
+          <Form />
+        </Stack>
+      </Container>
+    </>
   );
 }

@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["liel2c.deta.dev"],
+    domains: ["szevents-bucket.s3.eu-west-3.amazonaws.com"],
   },
 };
 

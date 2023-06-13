@@ -28,7 +28,8 @@ const basicFormSchema = yup
   .required();
 
 export default function EventBasicForm() {
-  const { setNewEventForm } = useContext(newEventContext);
+  const { newEventForm, setNewEventForm } = useContext(newEventContext);
+  console.log(newEventForm);
   const [file, setFile] = useState(null);
   const [uploadLink, setUploadLink] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -45,6 +46,7 @@ export default function EventBasicForm() {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(basicFormSchema),
+    defaultValues: newEventForm,
   });
 
   const onSubmit = async (data) => {
@@ -73,7 +75,7 @@ export default function EventBasicForm() {
     }
     setDateTime((prevState) => ({
       ...prevState,
-      startDate: `${dateObj?.$y}-${dateObj?.$M + 1}-${dateObj?.$D}`,
+      startDate: dateObj?.$d,
     }));
     setSaved(false);
   };
@@ -88,7 +90,7 @@ export default function EventBasicForm() {
     }
     setDateTime((prevState) => ({
       ...prevState,
-      startTime: `${timeObj?.$H}:${timeObj?.$m}`,
+      startTime: timeObj?.$d,
     }));
     setSaved(false);
   };

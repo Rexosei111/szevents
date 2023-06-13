@@ -2,81 +2,81 @@ import * as React from "react";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import ProTip from "../../ProTIp";
-import Link from "../../Link";
-import Copyright from "../../Copyright";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import AdminLayout from "@/components/components/admin/layout";
-import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
-import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
-import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
-import MessageOutlinedIcon from "@mui/icons-material/MessageOutlined";
+import axios, { isAxiosError } from "axios";
+import { EventCard } from "../events";
+import { Grid, Paper, Skeleton, Stack } from "@mui/material";
+import NewAdminLayout from "@/components/components/admin/adminLayout";
+import { fetcher } from "@/components/config/fetcher";
+import useSWR from "swr";
 
+const IndexSkeleton = () => {
+  return (
+    <Grid container spacing={2}>
+      {Array.from(Array(4)).map((_, index) => (
+        <Grid item xs={12} sm={6} md={4} key={index}>
+          <Stack flexDirection={"column"} gap={0} height={250}>
+            <Skeleton variant="rectangular" width={"100%"} height={"70%"} />
+            <Skeleton variant="text" width={"100%"} height={"15%"} />
+            <Skeleton variant="text" width={"80%"} height={"15%"} />
+          </Stack>
+        </Grid>
+      ))}
+    </Grid>
+  );
+};
 export default function Index() {
   const router = useRouter();
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
-      // The user is not authenticated, handle it here.
       router.push("/admin/login");
     },
   });
+
+  const { data, error, isLoading } = useSWR("/events/summary", fetcher);
+  if (isLoading) {
+    return <IndexSkeleton />;
+  }
+  if (error) {
+    return (
+      <Stack
+        height={"89vh"}
+        width={"100%"}
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
+        Unable to fetch data
+      </Stack>
+    );
+  }
+
   return (
     <>
       <Head>
         <title>Dashboard | Events Dashboard</title>
       </Head>
-      <Container maxWidth="sm">
-        <Box sx={{ my: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Material UI - Next.js example
-          </Typography>
-          <Link href="/about" color="secondary">
-            Go to the about page
-          </Link>
-          <ProTip />
-          <Copyright />
-        </Box>
-      </Container>
+      <Grid container spacing={2}>
+        {data?.events?.map((event, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <EventCard eventInfo={event} basePath={"/admin"} />
+          </Grid>
+        ))}
+      </Grid>
     </>
   );
 }
 
 Index.getInitialProps = async () => {
-  const metrics = [
-    {
-      name: "Events",
-      value: 3,
-      icon: "event",
-    },
-    {
-      name: "Average Attendees",
-      value: 300,
-      icon: "attendees",
-    },
-    {
-      name: "Revenue",
-      value: 1500,
-      icon: "revenue",
-    },
-    {
-      name: "Testimonies",
-      value: 100,
-      icon: "testimonies",
-    },
-  ];
   return {
-    pageDetails: {
-      title: "Good morning, Rex",
-      subtitle: "Add new events to your list",
-      metrics,
-      metricsComponent: "home",
-    },
+    title: "Good morning, Rex",
+    subtitle: "Add new events to your list",
   };
 };
 
 Index.getLayout = function (page) {
-  return <AdminLayout details={page.props.pageDetails}>{page}</AdminLayout>;
+  return <NewAdminLayout title={page.props.title}>{page}</NewAdminLayout>;
 };

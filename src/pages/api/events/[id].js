@@ -1,4 +1,5 @@
-import { Events } from "@/components/schemas";
+// import { Events } from "@/components/schemas";
+import Event from "@/components/models/events";
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
@@ -13,10 +14,12 @@ export default async function handler(req, res) {
 }
 
 const get = async (id) => {
+  console.log(id);
   try {
-    const event = await Events.get(id);
+    const event = await Event.findOne({ _id: id });
     return event;
   } catch (error) {
+    console.log(error);
     return null;
   }
 };

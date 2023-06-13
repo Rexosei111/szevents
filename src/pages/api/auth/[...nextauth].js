@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { Users } from "../../../schemas";
+import User from "../../../models/user";
+import connectMongo from "@/components/utils/connectMongo";
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_URL,
@@ -29,7 +30,8 @@ export const authOptions = {
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
         try {
-          const user = await Users.get(credentials.email);
+          await connectMongo();
+          const user = await User.findOne({ email: credentials.email });
           if (!user) {
             return null;
           }
