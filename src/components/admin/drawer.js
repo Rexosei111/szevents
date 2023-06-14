@@ -186,7 +186,7 @@ export function ResponsiveDrawer(props) {
               {/* <IconButton> */}
               <PeopleOutline fontSize="small" />
               {/* </IconButton> */}
-              <Typography fontSize={13}>Utilisateurs</Typography>
+              <Typography fontSize={13}>Users</Typography>
             </Stack>
             <Stack
               flexDirection={"row"}

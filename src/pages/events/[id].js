@@ -2,6 +2,7 @@ import RootLayout from "@/components/components/layout";
 import RootTopBar from "@/components/components/topBar";
 import { formatDate } from "@/components/utils/dateFormating";
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -12,6 +13,8 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  Skeleton,
+  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -19,43 +22,73 @@ import axios from "axios";
 import dayjs, { Dayjs } from "dayjs";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import InfoIcon from "@mui/icons-material/Info";
 import sanitizeHtml from "sanitize-html";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LocationMap from "@/components/components/locationMap";
 import GetTicket from "@/components/components/getTicket";
+import useSWR from "swr";
+import { fetcher } from "@/components/config/fetcher";
+import Image from "next/image";
 
-export default function DetailPage({ eventDetails }) {
+const LoadingSkeleton = () => {
+  return (
+    <Stack flexDirection={"column"} gap={2} width={"100%"}>
+      <Skeleton variant="rectangular" width={"100%"} height={200} />
+      <Skeleton variant="text" width={"45%"} height={20} />
+      <Skeleton variant="text" width={"70%"} height={20} />
+      <Skeleton variant="text" width={"40%"} height={20} />
+      <Skeleton variant="text" width={"40%"} height={20} />
+      <Skeleton variant="rectangular" width={"100%"} height={200} />
+    </Stack>
+  );
+};
+export default function DetailPage() {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [severity, setSeverity] = useState("success");
   const handleClickOpen = () => {
     setOpen(true);
   };
 
+  const handleAlertClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setAlertOpen(false);
+  };
+
+  const { data, error, isLoading } = useSWR(
+    "/events/" + router.query.id,
+    fetcher
+  );
   const handleClose = (value) => {
     setOpen(false);
   };
-  if (eventDetails === null) {
-    return <Typography variant="h4">Event details not found</Typography>;
+
+  const startDateObj = new Date(data?.startDate);
+
+  if (isLoading) {
+    return <LoadingSkeleton />;
   }
-  const startDateObj = new Date(eventDetails.startDate);
   return (
     <>
       <Head>
-        <title>{eventDetails.name}</title>
+        <title>{data?.name}</title>
       </Head>
-      <Stack flexDirection={"column"} gap={2}>
-        <Box
-          height={"50vh"}
-          width={"100vw"}
-          sx={{
-            backgroundImage: `url(${eventDetails.coverImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center center",
-            backgroundAttachment: "fixed",
-          }}
-        >
-          <RootTopBar bgcolor="transparent" textColor="white" />
+      <Stack flexDirection={"column"} gap={2} width={"100%"}>
+        <Box width={{ xs: "100%" }} height={{ xs: 350 }} position="relative">
+          <Image
+            src={data?.coverImage}
+            alt="cover image"
+            priority
+            fill
+            style={{ objectFit: "cover" }}
+          />
         </Box>
         <Container maxWidth={"lg"} sx={{ pb: 1 }}>
           <Stack
@@ -70,13 +103,13 @@ export default function DetailPage({ eventDetails }) {
                 gutterBottom
                 fontWeight={400}
               >
-                {eventDetails.name}
+                {data?.name}
               </Typography>
               <Typography variant="h4" fontSize={18} gutterBottom>
-                {formatDate(new Date(eventDetails?.startDate))}
+                {formatDate(new Date(data?.startDate))}
               </Typography>
               <Typography variant="h4" fontSize={18} gutterBottom>
-                {new Date(eventDetails?.startTime).toLocaleTimeString()}
+                {new Date(data?.startTime).toLocaleTimeString()}
               </Typography>
             </Box>
             <Paper
@@ -101,7 +134,7 @@ export default function DetailPage({ eventDetails }) {
                 GH
               </Typography>
               <Typography variant="subtitle2" fontSize={40} component={"span"}>
-                {eventDetails?.ticketInfo?.price}
+                {data?.ticketInfo?.price}
               </Typography>
               <Typography
                 variant="caption"
@@ -111,10 +144,8 @@ export default function DetailPage({ eventDetails }) {
               >
                 Available tickets:{" "}
                 {`${
-                  eventDetails?.ticketInfo?.total -
-                  (eventDetails?.ticketInfo?.sold
-                    ? eventDetails?.ticketInfo?.sold
-                    : 0)
+                  data?.ticketInfo?.total -
+                  (data?.ticketInfo?.sold ? data?.ticketInfo?.sold : 0)
                 }`}
               </Typography>
               <Button
@@ -127,7 +158,7 @@ export default function DetailPage({ eventDetails }) {
                   color: (theme) => theme.palette.common.black,
                 }}
               >
-                Get a ticket
+                Grab a ticket
               </Button>
             </Paper>
           </Stack>
@@ -135,7 +166,7 @@ export default function DetailPage({ eventDetails }) {
             <Box width={{ xs: "100%", md: "50%" }}>
               <Typography
                 dangerouslySetInnerHTML={{
-                  __html: sanitizeHtml(eventDetails["description"]),
+                  __html: sanitizeHtml(data?.description),
                 }}
                 gutterBottom
               />
@@ -152,44 +183,62 @@ export default function DetailPage({ eventDetails }) {
                   </ListItemIcon>
                   <ListItemText
                     primary={"Location Information"}
-                    secondary={eventDetails?.location?.address}
+                    secondary={data?.location?.address}
                   />
                 </ListItem>
               </List>
               <LocationMap
-                lng={eventDetails.location?.longitude}
-                lat={eventDetails.location?.latitude}
+                lng={data?.location?.longitude}
+                lat={data?.location?.latitude}
               />
             </Paper>
           </Stack>
         </Container>
       </Stack>
-      <GetTicket open={open} handleClose={handleClose} />
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        onClose={handleAlertClose}
+      >
+        <Alert
+          onClose={handleAlertClose}
+          variant="filled"
+          severity={severity}
+          sx={{ width: "100%" }}
+        >
+          {message}
+        </Alert>
+      </Snackbar>
+      <GetTicket
+        open={open}
+        setAlertOpen={setAlertOpen}
+        setSeverity={setSeverity}
+        handleAlertClose={handleAlertClose}
+        setMessage={setMessage}
+        handleClose={handleClose}
+        amount={data?.ticketInfo?.price}
+        eventName={data?.name}
+      />
     </>
   );
 }
 
-DetailPage.getInitialProps = async (context) => {
-  const { id } = context.query;
-  let eventDetails = null;
-  try {
-    const { data } = await axios.get("/api/events/" + id);
-    eventDetails = data;
-  } catch (error) {
-    console.log("Unable to fetch event details");
-    eventDetails = null;
-  }
+// DetailPage.getInitialProps = async (context) => {
+//   const { id } = context.query;
+//   let eventDetails = null;
+//   try {
+//     const { data } = await axios.get("/api/events/" + id);
+//     eventDetails = data;
+//   } catch (error) {
+//     console.log("Unable to fetch event details");
+//     eventDetails = null;
+//   }
 
-  return {
-    eventDetails,
-  };
-};
+//   return {
+//     eventDetails,
+//   };
+// };
 
 DetailPage.getLayout = function (page) {
-  if (page.props.eventDetails === null) {
-    return <RootLayout>{page}</RootLayout>;
-  }
-  if (page.props.eventDetails) {
-    return <main>{page}</main>;
-  }
+  return <RootLayout>{page}</RootLayout>;
 };

@@ -68,7 +68,7 @@ export default function EditEvent() {
 
 EditEvent.getInitialProps = async () => {
   return {
-    title: "Create New Event",
+    title: "Update Event",
     subtitle: "Lorem ipsum",
   };
 };
