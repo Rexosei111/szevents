@@ -12,7 +12,10 @@ export default function RootTopBar({
       <AppBar
         position="static"
         elevation={0}
-        sx={{ bgcolor: bgcolor, color: textColor }}
+        sx={{
+          bgcolor: (theme) => theme.palette.background.paper,
+          color: (theme) => theme.palette.primary.main,
+        }}
       >
         <Toolbar variant="dense">
           <IconButton

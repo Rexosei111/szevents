@@ -5,19 +5,17 @@ import Box from "@mui/material/Box";
 import ProTip from "../ProTIp";
 import Link from "../Link";
 import Copyright from "../Copyright";
+import { useRouter } from "next/router";
 
 export default function Index() {
+  const router = useRouter();
+  if (typeof window !== "undefined") {
+    router.push("/events?q=all");
+  }
   return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Material UI - Next.js example
-        </Typography>
-        <Link href="/about" color="secondary">
-          Go to the about page
-        </Link>
-        <ProTip />
-        <Copyright />
+        <Typography variant="h6">redirecting...</Typography>
       </Box>
     </Container>
   );
