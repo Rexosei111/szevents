@@ -1,5 +1,5 @@
 import { Box, Button, InputLabel, Paper, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useContext } from "react";
@@ -20,8 +20,14 @@ const fileTypes = [
   "image/x-icon",
 ];
 
-export default function FileUploadRoot() {
+export default function FileUploadRoot({ link }) {
   const { file, setFile, uploadLink, setUploadLink } = useContext(fileContext);
+  useEffect(() => {
+    if (link !== null) {
+      setUploadLink(link);
+      setFile(null);
+    }
+  }, [link]);
   const handleDragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -43,7 +49,6 @@ export default function FileUploadRoot() {
   };
 
   const handleChange = (e) => {
-    console.log(e.target.files);
     setFile(e.target.files[0]);
   };
   // onDrop sets inDropZone to false and adds files to fileList
@@ -53,7 +58,6 @@ export default function FileUploadRoot() {
 
     // get files from event on the dataTransfer object as an array
     let file = e.dataTransfer.files[0];
-    console.log(file);
     if (fileTypes.includes(file.type)) {
       setUploadLink(null);
       setFile(file);
@@ -102,7 +106,7 @@ export default function FileUploadRoot() {
               src={uploadLink}
               alt="cover image"
               fill
-              style={{ objectFit: "contain" }}
+              style={{ objectFit: "cover" }}
             />
           )}
           {!uploadLink && (

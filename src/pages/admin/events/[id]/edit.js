@@ -3,10 +3,16 @@ import EventBasicForm, {
   EventBasicEditForm,
 } from "@/components/components/admin/eventBasicForm";
 import EventFormWrapper from "@/components/components/admin/eventForm";
-import EventLocationForm from "@/components/components/admin/eventLocationForm";
+import EventLocationForm, {
+  EventLocationEditForm,
+} from "@/components/components/admin/eventLocationForm";
 import AdminLayout from "@/components/components/admin/layout";
-import TicketsForm from "@/components/components/admin/ticketsForm";
-import SplitButton from "@/components/components/splitButton";
+import TicketsForm, {
+  TicketsEditForm,
+} from "@/components/components/admin/ticketsForm";
+import SplitButton, {
+  SplitEditButton,
+} from "@/components/components/splitButton";
 import { Button, Stack } from "@mui/material";
 import axios, { isAxiosError } from "axios";
 import Head from "next/head";
@@ -29,8 +35,10 @@ export default function EditEvent() {
         }
       }
     }
-    getEvent();
-  }, []);
+    if (router.isReady) {
+      getEvent();
+    }
+  }, [router.isReady]);
   return (
     <editEventContext.Provider value={{ newEventForm, setNewEventForm }}>
       <Head>
@@ -39,20 +47,20 @@ export default function EditEvent() {
       <EventFormWrapper
         title={"Basic details"}
         subtitle={"This section contains the basic details about the event"}
-        sectionForm={<EventBasicEditForm info={newEventForm} />}
+        sectionForm={<EventBasicEditForm />}
       />
       <EventFormWrapper
         title={"Location Details"}
         subtitle={"This section is about the location for the event."}
-        sectionForm={<EventLocationForm />}
+        sectionForm={<EventLocationEditForm />}
       />
       <EventFormWrapper
         title={"Tickets Info"}
         subtitle={"This section is about the tickets for your event"}
-        sectionForm={<TicketsForm />}
+        sectionForm={<TicketsEditForm />}
       />
       <Stack flexDirection={"row"} justifyContent={"flex-end"} gap={1} my={1}>
-        <SplitButton options={saveOptions} />
+        <SplitEditButton options={saveOptions} />
       </Stack>
     </editEventContext.Provider>
   );

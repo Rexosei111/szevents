@@ -36,7 +36,7 @@ export default function Form() {
     return result;
   };
   return (
-    <Paper elevation={0} sx={{ p: 3 }}>
+    <Paper sx={{ p: 3 }}>
       <Typography variant="h3">Welcome back</Typography>
       <Typography variant="subtitle1" my={2} textAlign="center">
         Please log in with you credentials

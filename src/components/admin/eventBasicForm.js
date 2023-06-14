@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -218,16 +218,19 @@ export default function EventBasicForm() {
 }
 
 import { editEventContext } from "@/components/pages/admin/events/[id]/edit";
+import dayjs from "dayjs";
 
 const basicFormEditSchema = yup
   .object({
     name: yup.string().required(),
+    startDate: yup.date(),
+    startTime: yup.date(),
+    description: yup.string(),
   })
   .required();
 
-export function EventBasicEditForm({ info }) {
+export function EventBasicEditForm() {
   const { newEventForm, setNewEventForm } = useContext(editEventContext);
-  console.log(newEventForm);
   const [file, setFile] = useState(null);
   const [uploadLink, setUploadLink] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -241,12 +244,24 @@ export function EventBasicEditForm({ info }) {
   const {
     register,
     handleSubmit,
+    reset,
+    setValue,
     getValues,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(basicFormSchema),
-    defaultValues: { name: info?.name },
+    resolver: yupResolver(basicFormEditSchema),
   });
+  useEffect(() => {
+    reset(newEventForm);
+    setDateTime({
+      startDate: new dayjs(newEventForm?.startDate),
+      startTime: new dayjs(newEventForm?.startTime),
+    });
+    setDescription(newEventForm?.description);
+  }, [newEventForm]);
+  useEffect(() => {
+    setSaved(false);
+  }, [uploadLink]);
   const onSubmit = async (data) => {
     setLoading(true);
     const finalData = {
@@ -273,8 +288,10 @@ export function EventBasicEditForm({ info }) {
     }
     setDateTime((prevState) => ({
       ...prevState,
-      startDate: dateObj?.$d,
+      startDate: dateObj,
     }));
+    setValue("startDate", dateObj?.$d);
+
     setSaved(false);
   };
 
@@ -288,11 +305,11 @@ export function EventBasicEditForm({ info }) {
     }
     setDateTime((prevState) => ({
       ...prevState,
-      startTime: timeObj?.$d,
+      startTime: timeObj,
     }));
+    setValue("startTime", timeObj?.$d);
     setSaved(false);
   };
-  console.log(info);
   return (
     <fileContext.Provider
       value={{
@@ -320,7 +337,6 @@ export function EventBasicEditForm({ info }) {
                 fullWidth
                 id="name"
                 {...register("name")}
-                defaultValue={newEventForm?.name}
                 variant="outlined"
                 type={"text"}
                 onChange={() => setSaved(false)}
@@ -368,10 +384,12 @@ export function EventBasicEditForm({ info }) {
                 Start Date
               </InputLabel>
               <StaticDatePicker
+                value={dateTime?.startDate}
+                // defaultValue={new Date(newEventForm?.startDate)}
                 onChange={handleDateChange}
                 id="date"
                 sx={{ bgcolor: "#f5f5f599", borderRadius: "20px 0 0 20px" }}
-                disablePast
+                // disablePast
               />
             </Box>
             <Box width={{ xs: "100%", md: "50%" }}>
@@ -379,6 +397,7 @@ export function EventBasicEditForm({ info }) {
                 Start time
               </InputLabel>
               <StaticTimePicker
+                value={dateTime?.startTime}
                 onChange={handleTimeChange}
                 id="time"
                 sx={{ bgcolor: "#f5f5f599", borderRadius: "0 20px 20px 0" }}
@@ -392,7 +411,7 @@ export function EventBasicEditForm({ info }) {
             flexWrap={{ xs: "wrap", md: "wrap" }}
           >
             <Box width={{ xs: "100%", md: "100%" }}>
-              <FileUploadRoot />
+              <FileUploadRoot link={newEventForm?.coverImage} />
             </Box>
             <Typography variant="subtitle2" color={"GrayText"}>
               This will be displayed as the cover photo on the event listing and

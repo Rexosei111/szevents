@@ -57,6 +57,8 @@ export default function RichEditor() {
     <QuillNoSSRWrapper
       modules={modules}
       formats={formats}
+      value={description}
+      // defaultValue={description}
       theme="snow"
       onChange={handleChange}
     />
