@@ -75,7 +75,7 @@ export default function GetTicket({
   const initializePayment = usePaystackPayment({
     label: eventName,
     email: getValues()?.email,
-    amount: amount,
+    amount: amount * 100,
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
     currency: "GHS",
   });
