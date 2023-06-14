@@ -6,6 +6,7 @@ import {
   CardActions,
   CardContent,
   Container,
+  Grid,
   Step,
   StepLabel,
   Stepper,
@@ -24,6 +25,12 @@ import { useRouter } from "next/router";
 import EventTable from "@/components/components/admin/eventTable";
 import NewAdminLayout from "@/components/components/admin/adminLayout";
 import { Add } from "@mui/icons-material";
+import ColorTabs from "@/components/components/admin/eventTabs";
+import NavTabs from "@/components/components/admin/eventTabs";
+import useSWR from "swr";
+import { fetcher } from "@/components/config/fetcher";
+import { IndexSkeleton } from "..";
+import { EventCard } from "../../events";
 
 const steps = [
   {
@@ -98,34 +105,52 @@ export default function Index() {
   const router = useRouter();
   const [status, setStatus] = useState(null);
   const [events, setEvents] = useState([]);
-  useEffect(() => {
-    async function get_events() {
-      try {
-        const { data } = await axios.get(
-          "http://localhost:3000/api/events?q=" + router.query.q
-            ? router.query.q
-            : "all"
-        );
-        setEvents(data);
-        console.log(data);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          console.log(error);
-        }
-      }
-    }
-    setStatus(router.query.q ? router.query.q : "all");
-    if (router.isReady) {
-      get_events();
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   async function get_events() {
+  //     try {
+  //       const { data } = await axios.get(
+  //         "http://localhost:3000/api/events?q=" + router.query.q
+  //           ? router.query.q
+  //           : "all"
+  //       );
+  //       setEvents(data);
+  //     } catch (error) {
+  //       if (isAxiosError(error)) {
+  //         console.log(error);
+  //       }
+  //     }
+  //   }
+  //   setStatus(router.query.q ? router.query.q : "all");
+  //   if (router.isReady) {
+  //     get_events();
+  //   }
+  const { data, error, isLoading, mutate } = useSWR(
+    () => `/events?q=${router.query.q ? router.query.q : "all"}`,
+    fetcher
+  );
+  // }, [router]);
+  // useEffect(() => {
+  //   // setStatus(router.query.q ? router.query.q : "all");
+  //   // mutate();
+  // }, [router.isReady]);
+
+  if (isLoading) {
+    return <IndexSkeleton />;
+  }
+
   return (
     <>
       {/* <AddNewEventCard /> */}
-      <Stack flexDirection={"row"} width={"100%"}>
+      <Stack
+        flexDirection={"row"}
+        width={"100%"}
+        justifyContent={"space-between"}
+        flexWrap={{ xs: "wrap", lg: "nowrap" }}
+      >
+        <NavTabs />
         <Button
           startIcon={<Add fontSize="small" />}
-          sx={{ ml: "auto" }}
+          sx={{ ml: { xs: "auto", lg: "none" }, mt: { xs: 1, lg: 0 } }}
           variant="contained"
           component={Link}
           href="/admin/events/new"
@@ -134,10 +159,29 @@ export default function Index() {
           New
         </Button>
       </Stack>
-      <Typography variant="h6" gutterBottom mt={2} textTransform={"capitalize"}>
+      {/* <Typography variant="h6" gutterBottom mt={2} textTransform={"capitalize"}>
         {status} Events
-      </Typography>
-      <EventTable events={events} />
+      </Typography> */}
+      {data?.length === 0 && (
+        <Stack
+          height={"80vh"}
+          width={"100%"}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          You have no event in the system.
+        </Stack>
+      )}
+      {data?.length > 0 && (
+        <Grid container spacing={2} mt={2} width={"100%"}>
+          {data?.map((event, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <EventCard eventInfo={event} basePath={"/admin"} />
+            </Grid>
+          ))}
+        </Grid>
+      )}
+      {/* <EventTable events={events} /> */}
     </>
   );
 }

@@ -18,6 +18,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: "Unable to update event" });
     }
   }
+  if (req.method === "DELETE") {
+    const result = await deleteEvent(req.query.id);
+    if (result === true) {
+      return res.status(200);
+    } else {
+      return res.status(400).json({ message: "Unable to delete event" });
+    }
+  }
   return res.status(200).json({ name: "John Doe" });
 }
 
@@ -37,5 +45,15 @@ const put = async (id, body) => {
     return updatedEvent;
   } catch (error) {
     return null;
+  }
+};
+
+const deleteEvent = async (id) => {
+  console.log(id);
+  try {
+    const deletedEvent = await Event.deleteOne({ _id: id });
+    return true;
+  } catch (error) {
+    return false;
   }
 };

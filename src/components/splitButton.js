@@ -20,7 +20,11 @@ const options = [
   "Rebase and merge",
 ];
 
-export default function SplitButton({ options = [], disable = false }) {
+export default function SplitButton({
+  options = [],
+  disable = false,
+  handleError,
+}) {
   const { newEventForm, setNewEventForm } = React.useContext(newEventContext);
 
   const [loading, setLoading] = React.useState(false);
@@ -49,6 +53,7 @@ export default function SplitButton({ options = [], disable = false }) {
     } catch (error) {
       console.log(error);
       setLoading(false);
+      handleError();
     }
   };
 

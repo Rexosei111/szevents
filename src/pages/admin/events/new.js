@@ -5,14 +5,28 @@ import EventLocationForm from "@/components/components/admin/eventLocationForm";
 import AdminLayout from "@/components/components/admin/layout";
 import TicketsForm from "@/components/components/admin/ticketsForm";
 import SplitButton from "@/components/components/splitButton";
-import { Button, Stack } from "@mui/material";
+import { Alert, Button, Snackbar, Stack } from "@mui/material";
 import Head from "next/head";
 import React, { createContext, useState } from "react";
 
 export const newEventContext = createContext("");
+
 const saveOptions = ["Draft", "Live", "Upcoming"];
 export default function NewEvent() {
+  const [open, setOpen] = React.useState(false);
   const [newEventForm, setNewEventForm] = useState({});
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
   return (
     <newEventContext.Provider value={{ newEventForm, setNewEventForm }}>
       <Head>
@@ -34,8 +48,23 @@ export default function NewEvent() {
         sectionForm={<TicketsForm />}
       />
       <Stack flexDirection={"row"} justifyContent={"flex-end"} gap={1} my={1}>
-        <SplitButton options={saveOptions} />
+        <SplitButton options={saveOptions} handleError={handleClick} />
       </Stack>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        // action={action}
+      >
+        <Alert
+          onClose={handleClose}
+          variant="filled"
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          There might be errors in the provided details
+        </Alert>
+      </Snackbar>
     </newEventContext.Provider>
   );
 }

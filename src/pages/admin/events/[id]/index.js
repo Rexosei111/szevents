@@ -16,7 +16,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import Head from "next/head";
 import React from "react";
 import sanitizeHtml from "sanitize-html";
@@ -29,6 +29,7 @@ import NewAdminLayout from "@/components/components/admin/adminLayout";
 import useSWR from "swr";
 import { fetcher } from "@/components/config/fetcher";
 import Image from "next/image";
+import { APIClient } from "@/components/config/axios";
 
 const sliderMarks = [
   { value: 0, label: "0" },
@@ -50,14 +51,33 @@ const DetailsLoadingSkeleton = () => {
 };
 export default function EventDetails() {
   const router = useRouter();
-  // if (router.isReady) {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     "/events/" + router.query.id,
     fetcher
   );
-  console.log(data);
-  // }
+  const handleDelete = async () => {
+    try {
+      await APIClient.delete("/events/" + router.query.id);
+      router.push("/admin");
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.log(error);
+      }
+    }
+  };
 
+  if (error) {
+    return (
+      <Stack
+        height={"89vh"}
+        width={"100%"}
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
+        Event not found
+      </Stack>
+    );
+  }
   if (isLoading) {
     return <DetailsLoadingSkeleton />;
   }
@@ -67,7 +87,7 @@ export default function EventDetails() {
         <title>{data?.name}</title>
       </Head>
       <Box height={"inherit"}>
-        <Typography variant="h4" gutterButton mb={2}>
+        <Typography variant="h4" gutterBottom mb={2}>
           {data?.name}
         </Typography>
         <Box width={{ xs: "100%" }} height={{ xs: 350 }} position="relative">
@@ -85,26 +105,34 @@ export default function EventDetails() {
             gap={5}
             width={"100%"}
             flexWrap={{ xs: "wrap-reverse", lg: "nowrap" }}
-            // position={"relative"}
           >
             <Box
               width={{ xs: "100%", md: "60%" }}
-              // order={{ xs: 2, lg: 1 }}
               component={Paper}
               p={2}
               elevation={0}
             >
-              {/* <Typography variant="caption" fontSize={15} gutterBottom>
-              Event Description
-            </Typography> */}
+              <Typography
+                variant="h5"
+                fontSize={18}
+                fontWeight={700}
+                gutterBottom
+              >
+                About Event
+              </Typography>
               <Typography
                 dangerouslySetInnerHTML={{
                   __html: sanitizeHtml(data?.description),
                 }}
                 gutterBottom
               />
-              <Typography variant="subtitle2" fontSize={15} gutterBottom>
-                Location Information
+              <Typography
+                variant="h5"
+                fontSize={18}
+                fontWeight={700}
+                gutterBottom
+              >
+                Location
               </Typography>
               <Typography variant="subtitle2">
                 {data?.location?.address ? data.location?.address : "Not set"}
@@ -113,10 +141,8 @@ export default function EventDetails() {
             <Stack
               flexDirection={"column"}
               gap={2}
-              // order={{ xs: 1, lg: 2 }}
               width={{ xs: "100%", md: "30%" }}
               my={1}
-              // sx={{ position: "absolute", right: 0, top: -150 }}
             >
               <Paper
                 sx={{ width: "100%", p: 2, borderRadius: 3 }}
@@ -157,15 +183,28 @@ export default function EventDetails() {
                     variant="contained"
                     fullWidth
                     sx={{
-                      bgcolor: "rgb(23,26,32)",
-                      color: "white",
                       borderRadius: 3,
+                      textTransform: "capitalize",
                     }}
                     disableElevation
                     LinkComponent={Link}
                     href={"/admin/events/" + router.query.id + "/edit"}
                   >
                     Update Event
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    fullWidth
+                    onClick={handleDelete}
+                    sx={{
+                      borderRadius: 3,
+                      textTransform: "capitalize",
+                      mt: 1,
+                    }}
+                    disableElevation
+                  >
+                    delete Event
                   </Button>
                 </List>
               </Paper>

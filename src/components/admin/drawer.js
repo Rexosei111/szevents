@@ -114,7 +114,7 @@ export function ResponsiveDrawer(props) {
     const router = useRouter();
     const logout = () => {
       signOut({ redirect: false });
-      // router.push("/auth/login");
+      router.push("/admin/login");
     };
     const handleOpen = (e) => {
       setOpen(!open);

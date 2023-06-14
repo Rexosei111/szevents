@@ -29,7 +29,6 @@ const basicFormSchema = yup
 
 export default function EventBasicForm() {
   const { newEventForm, setNewEventForm } = useContext(newEventContext);
-  console.log(newEventForm);
   const [file, setFile] = useState(null);
   const [uploadLink, setUploadLink] = useState(null);
   const [loading, setLoading] = useState(false);

@@ -13,7 +13,7 @@ import NewAdminLayout from "@/components/components/admin/adminLayout";
 import { fetcher } from "@/components/config/fetcher";
 import useSWR from "swr";
 
-const IndexSkeleton = () => {
+export const IndexSkeleton = () => {
   return (
     <Grid container spacing={2}>
       {Array.from(Array(4)).map((_, index) => (
@@ -59,13 +59,25 @@ export default function Index() {
       <Head>
         <title>Dashboard | Events Dashboard</title>
       </Head>
-      <Grid container spacing={2}>
-        {data?.events?.map((event, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <EventCard eventInfo={event} basePath={"/admin"} />
-          </Grid>
-        ))}
-      </Grid>
+      {data?.events?.length === 0 && (
+        <Stack
+          height={"89vh"}
+          width={"100%"}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          You have no event in the system.
+        </Stack>
+      )}
+      {data?.events?.length > 0 && (
+        <Grid container spacing={2}>
+          {data?.events?.map((event, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <EventCard eventInfo={event} basePath={"/admin"} />
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </>
   );
 }
