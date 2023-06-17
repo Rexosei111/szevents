@@ -161,10 +161,8 @@ export function ResponsiveDrawer(props) {
               </ListItem>
             ))}
           </List>
-          <Paper
-            component={Stack}
-            flexDirection={"column"}
-            gap={2}
+          <List
+            disablePadding
             sx={{
               mt: "auto",
               width: "100%",
@@ -174,48 +172,31 @@ export function ResponsiveDrawer(props) {
             }}
             elevation={0}
           >
-            <Stack
-              flexDirection={"row"}
-              justifyContent={"flex-start"}
-              alignItems={"center"}
-              component={Button}
-              variant="secondary"
-              sx={{ fontSize: 13, textTransform: "capitalize" }}
-              gap={2}
-            >
-              {/* <IconButton> */}
-              <PeopleOutline fontSize="small" />
-              {/* </IconButton> */}
-              <Typography fontSize={13}>Users</Typography>
-            </Stack>
-            <Stack
-              flexDirection={"row"}
-              justifyContent={"flex-start"}
-              alignItems={"center"}
-              component={Button}
-              variant="secondary"
-              sx={{ fontSize: 13, textTransform: "capitalize" }}
-              gap={2}
-            >
-              <Avatar sx={{ width: 30, height: 30 }}>{"R"}</Avatar>
-              <Typography fontSize={13}>{"Osei Kyei"}</Typography>
-            </Stack>
-            <Stack
-              flexDirection={"row"}
-              justifyContent={"flex-start"}
-              alignItems={"center"}
-              component={Button}
-              onClick={logout}
-              variant="secondary"
-              sx={{ fontSize: 13, textTransform: "capitalize" }}
-              gap={2}
-            >
-              {/* <IconButton> */}
-              <LogoutIcon fontSize="small" />
-              {/* </IconButton> */}
-              <Typography fontSize={13}>Logout</Typography>
-            </Stack>
-          </Paper>
+            <ListItem disableGutters disablePadding>
+              <ListItemButton component={Link} href="/admin/users">
+                <ListItemIcon>
+                  <PeopleOutline fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Users" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disableGutters disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <Avatar sx={{ width: 30, height: 30 }}>{"R"}</Avatar>
+                </ListItemIcon>
+                <ListItemText primary={"Osei Kyei"} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disableGutters disablePadding>
+              <ListItemButton onClick={logout}>
+                <ListItemIcon>
+                  <LogoutIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary={"Logout"} />
+              </ListItemButton>
+            </ListItem>
+          </List>
         </Stack>
       </Box>
     );
