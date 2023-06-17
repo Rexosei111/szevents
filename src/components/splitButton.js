@@ -13,12 +13,7 @@ import axios from "axios";
 import { LoadingButton } from "@mui/lab";
 import { useRouter } from "next/router";
 import { editEventContext } from "../pages/admin/events/[id]/edit";
-
-const options = [
-  "Create a merge commit",
-  "Squash and merge",
-  "Rebase and merge",
-];
+import { APIClient } from "../config/axios";
 
 export default function SplitButton({
   options = [],
@@ -39,8 +34,8 @@ export default function SplitButton({
     const statusN = options[selectedIndex].toLowerCase();
     // setLoading(false);
     try {
-      const { data } = await axios.post(
-        "http://localhost:3000/api/events",
+      const { data } = await APIClient.post(
+        "/events",
         { ...newEventForm, status: statusN },
         {
           headers: {
