@@ -31,8 +31,27 @@ export default function SplitButton({
 
   const handleClick = async () => {
     setLoading(true);
-    const statusN = options[selectedIndex].toLowerCase();
-    // setLoading(false);
+    let statusN = options[selectedIndex].toLowerCase();
+    if (statusN !== "draft") {
+      const startDate = new Date(newEventForm?.startDate);
+      const startTime = new Date(newEventForm?.startTime);
+      const startDateTime = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate(),
+        startTime.getHours(),
+        startTime.getMinutes(),
+        startTime.getSeconds(),
+        startTime.getMilliseconds()
+      );
+      const currentDate = new Date();
+      if (startDateTime.getTime() <= currentDate.getTime()) {
+        statusN = "live";
+      } else if (startDateTime.getTime() > currentDate.getTime()) {
+        statusN = "upcoming";
+      }
+    }
+    setLoading(false);
     try {
       const { data } = await APIClient.post(
         "/events",
@@ -151,25 +170,44 @@ export function SplitEditButton({ options = [], disable = false }) {
 
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [selectedIndex, setSelectedIndex] = React.useState(
+    newEventForm && newEventForm?.status === "draft" ? 0 : 1
+  );
 
   React.useEffect(() => {
     if (options) {
       setSelectedIndex(
-        options.findIndex(
-          (element) => element === capitalize(newEventForm?.status)
-        )
+        newEventForm && newEventForm?.status === "draft" ? 0 : 1
       );
     }
   }, [newEventForm, options]);
 
   const handleClick = async () => {
     setLoading(true);
-    const statusN = options[selectedIndex].toLowerCase();
-    // setLoading(false);
+    let statusN = options[selectedIndex].toLowerCase();
+    if (statusN !== "draft") {
+      const startDate = new Date(newEventForm?.startDate);
+      const startTime = new Date(newEventForm?.startTime);
+      const startDateTime = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate(),
+        startTime.getHours(),
+        startTime.getMinutes(),
+        startTime.getSeconds(),
+        startTime.getMilliseconds()
+      );
+      const currentDate = new Date();
+      if (startDateTime.getTime() <= currentDate.getTime()) {
+        statusN = "live";
+      } else if (startDateTime.getTime() > currentDate.getTime()) {
+        statusN = "upcoming";
+      }
+    }
+
     try {
-      const { data } = await axios.put(
-        "http://localhost:3000/api/events/" + router.query.id,
+      const { data } = await APIClient.put(
+        "/events/" + router.query.id,
         { ...newEventForm, status: statusN },
         {
           headers: {

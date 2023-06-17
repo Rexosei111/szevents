@@ -20,7 +20,7 @@ import { useRouter } from "next/router";
 import React, { createContext, useEffect, useState } from "react";
 
 export const editEventContext = createContext("");
-const saveOptions = ["Draft", "Live", "Upcoming"];
+const saveOptions = ["Draft", "Publish"];
 export default function EditEvent() {
   const router = useRouter();
   const [newEventForm, setNewEventForm] = useState({});

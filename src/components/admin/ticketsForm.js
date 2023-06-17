@@ -138,6 +138,7 @@ export default function TicketsForm() {
             </InputLabel>
             <DateTimePicker
               id="startDate"
+              disablePast
               onChange={handleStartDateChange}
               sx={{ width: "100%" }}
             />
@@ -147,6 +148,7 @@ export default function TicketsForm() {
               Sales ends at
             </InputLabel>
             <DateTimePicker
+              disablePast
               id="endDate"
               onChange={handleEndDateChange}
               sx={{ width: "100%" }}
@@ -303,6 +305,7 @@ export function TicketsEditForm() {
             <DateTimePicker
               value={start_date}
               id="startDate"
+              disablePast
               onChange={handleStartDateChange}
               sx={{ width: "100%" }}
             />
@@ -313,6 +316,7 @@ export function TicketsEditForm() {
             </InputLabel>
             <DateTimePicker
               value={end_date}
+              disablePast
               id="endDate"
               onChange={handleEndDateChange}
               sx={{ width: "100%" }}

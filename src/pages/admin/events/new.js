@@ -11,7 +11,7 @@ import React, { createContext, useState } from "react";
 
 export const newEventContext = createContext("");
 
-const saveOptions = ["Draft", "Live", "Upcoming"];
+const saveOptions = ["Draft", "Publish"];
 export default function NewEvent() {
   const [open, setOpen] = React.useState(false);
   const [newEventForm, setNewEventForm] = useState({});
