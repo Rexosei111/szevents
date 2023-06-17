@@ -51,7 +51,6 @@ export default function SplitButton({
         statusN = "upcoming";
       }
     }
-    setLoading(false);
     try {
       const { data } = await APIClient.post(
         "/events",
